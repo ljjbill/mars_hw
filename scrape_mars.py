@@ -29,27 +29,22 @@ def scrape():
     mars_facts_data['news_paragraph'] = news_paragraph 
     
     #Mars Featured Image
-    nasa_image = "https://www.jpl.nasa.gov/spaceimages/?search=&category=featured#submit"
-    browser.visit(nasa_image)
+    #Define the URL of the image page
+    url_image = "https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars"
+    #Visit the URL via chrome
+    browser.visit(url_image)
     tmd.sleep(2)
 
-    from urllib.parse import urlsplit
-    base_url = "{0.scheme}://{0.netloc}/".format(urlsplit(nasa_image))
-    
-    xpath = "//*[@id=\"page\"]/section[3]/div/ul/li[1]/a/div/div[2]/img"
-
-    #Use splinter to click on the mars featured image
-    #to bring the full resolution image
-    results = browser.find_by_xpath(xpath)
-    img = results[0]
-    img.click()
-    tmd.sleep(2)
-    
-    #get image url using BeautifulSoup
+    #Get the html codes of the page
     html_image = browser.html
+    #Parse the html codes
     soup = bs(html_image, "html.parser")
-    img_url = soup.find("img", class_="fancybox-image")["src"]
-    full_img_url = base_url + img_url
+    #Find the image url
+    featured_image_url  = soup.find('article')['style'].replace('background-image: url(','').replace(');', '')[1:-1]
+    #Define the base url
+    base_url = 'https://www.jpl.nasa.gov'
+    #Combine two url into one
+    full_img_url = base_url + featured_image_url
     mars_facts_data["featured_image"] = full_img_url
     
     # #### Mars Weather
